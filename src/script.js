@@ -3,17 +3,49 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import gsap from 'gsap'
 import * as lil from 'lil-gui'
+// import image from '../static/textures/door/color.jpg'
+/**
+Textures 
+ */
+// https://marmoset.co/posts/physically-based-rendering-and-you-can-too/
+const loadingManager = new THREE.LoadingManager()
 
-/* DEBUG TOOLS
-lil-gui > https://lil-gui.georgealways.com/#Guide
-control-panel
-ControlKit
-Guify
-Oui
-*/
+loadingManager.onStart = () => {
+    console.log('onStart');
+}
+loadingManager.onLoad = () => {
+    console.log('onLoad');
+}
+loadingManager.onProgress = () => {
+    console.log('onProgress');
+}
+loadingManager.onError = () => {
+    console.log('onError');
+}
 
 
+const textureLoader = new THREE.TextureLoader(loadingManager)
+// const colorTexture = textureLoader.load('/textures/checkerboard-8x8.png')
+const colorTexture = textureLoader.load('/textures/minecraft.png')
+const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const heightTexture = textureLoader.load('/textures/door/height.jpg')
+const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+const metalness = textureLoader.load('/textures/door/metalness.jpg')
+const normalTexture = textureLoader.load('/textures/door/normal.jpg')
+const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
 
+
+// colorTexture.repeat.x = 2
+// colorTexture.repeat.y = 3
+// colorTexture.wrapS = THREE.RepeatWrapping
+// colorTexture.wrapT = THREE.MirroredRepeatWrapping
+// colorTexture.rotation = Math.PI / 4
+// colorTexture.center.x = 0.5
+// colorTexture.center.y = 0.5
+
+colorTexture.generateMipmaps = false
+colorTexture.minFilter = THREE.NearestFilter //SHARPEN PIXEL
+colorTexture.magFilter = THREE.NearestFilter //SHARPEN PIXEL
 /* Sizes */
 const sizes = {
     width: window.innerWidth,
@@ -51,11 +83,9 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 /** Objects */
-const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({
-    color: 'gray',
-    // wireframe: true
-})
+// const geometry = new THREE.BoxGeometry(1, 1, 1)
+const geometry = new THREE.BoxBufferGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ map: colorTexture })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
@@ -91,16 +121,16 @@ const tick = () => {
     window.requestAnimationFrame(tick)
 }
 
-
 tick()
 
-/**DEBUG */
+//#region DEBUG //
 const gui = new lil.GUI()
+gui.hide()
 
 const parameters = {
     color: 0xff0000,
     spin: () => {
-        gsap.to(mesh.rotation, {duration: 1, y: mesh.rotation.y + 10})
+        gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + 10 })
     }
 }
 
@@ -115,10 +145,10 @@ gui
 gui
     .add(mesh, 'visible')
 
-gui 
+gui
     .add(material, 'wireframe')
 
-gui 
+gui
     .addColor(parameters, 'color')
     .onChange(() => {
         material.color.set(parameters.color)
@@ -127,3 +157,7 @@ gui
 gui
     .add(parameters, 'spin')
     .name('döndür')
+
+    //#endregion //
+	
+	
