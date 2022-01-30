@@ -2,6 +2,17 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import gsap from 'gsap'
+import * as lil from 'lil-gui'
+
+/* DEBUG TOOLS
+lil-gui > https://lil-gui.georgealways.com/#Guide
+control-panel
+ControlKit
+Guify
+Oui
+*/
+
+
 
 /* Sizes */
 const sizes = {
@@ -41,7 +52,10 @@ const scene = new THREE.Scene()
 
 /** Objects */
 const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: 'gray' })
+const material = new THREE.MeshBasicMaterial({
+    color: 'gray',
+    // wireframe: true
+})
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
@@ -53,7 +67,7 @@ camera.lookAt(mesh.position)
 
 scene.add(camera)
 
-/*Controls OrbitControl*/ 
+/*Controls OrbitControl*/
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
@@ -80,3 +94,36 @@ const tick = () => {
 
 tick()
 
+/**DEBUG */
+const gui = new lil.GUI()
+
+const parameters = {
+    color: 0xff0000,
+    spin: () => {
+        gsap.to(mesh.rotation, {duration: 1, y: mesh.rotation.y + 10})
+    }
+}
+
+// gui.add(mesh.rotation, 'y', -3, 3, 0.01)
+gui
+    .add(mesh.rotation, 'y')
+    .min(-3)
+    .max(3)
+    .step(0.01)
+    .name('rotation')
+
+gui
+    .add(mesh, 'visible')
+
+gui 
+    .add(material, 'wireframe')
+
+gui 
+    .addColor(parameters, 'color')
+    .onChange(() => {
+        material.color.set(parameters.color)
+    })
+
+gui
+    .add(parameters, 'spin')
+    .name('döndür')
