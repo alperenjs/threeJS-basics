@@ -127,14 +127,11 @@ const material = new THREE.MeshPhysicalMaterial()
 // material.roughness = 0
 
 // material.metalness = 0
-// material.roughness = 1
 // material.envMapIntensity = 0.9
 // material.clearcoat = 1
 // material.transparent = true
-// material.transmission = 1
 // material.opacity = 1
 // material.reflectivity = 0.2
-
 material.transmission = 1
 material.thickness = .2
 material.roughness = 0.07
