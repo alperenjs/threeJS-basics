@@ -209,8 +209,8 @@ controls.enableDamping = true
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
-renderer.setClearColor(0x1f1e1c, 1);
-// scene.background = manzara
+// renderer.setClearColor(0x1f1e1c, 1);
+scene.background = manzara
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
