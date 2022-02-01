@@ -5,6 +5,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
+import gsap from 'gsap'
+
 /**
  * Base
  */
@@ -22,6 +24,7 @@ const scene = new THREE.Scene()
  */
 const textureLoader = new THREE.TextureLoader()
 const matcapTexture = textureLoader.load('/textures/matcaps/3.png')
+const matcapTexture2 = textureLoader.load('/textures/matcaps/5.png')
 
 
 /**FONTS */
@@ -32,7 +35,7 @@ loader.load(
 
     (font) => {
         const textGeometry = new TextGeometry(
-            'Hello There!',
+            'Alperen was here.',
             {
                 font: font,
                 size: 0.5,
@@ -48,12 +51,39 @@ loader.load(
 
         textGeometry.center()
 
-        const textMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture})
-        // textMaterial.matcap = matcapTexture
-        // textMaterial.wireframe = true
-        
-        const text = new THREE.Mesh(textGeometry, textMaterial)
+        const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+        const materialDonut = new THREE.MeshMatcapMaterial({ matcap: matcapTexture2 })
+        // material.matcap = matcapTexture
+        // material.wireframe = true
+
+        const text = new THREE.Mesh(textGeometry, material)
         scene.add(text)
+
+        const donutGeometry = new THREE.TorusBufferGeometry(0.3, 0.2, 20, 45)
+        //for perfomence issues, created this two consts above for loop
+        //provided as x10 performence 
+
+        for (let i = 0; i < 300; i++) {
+
+            const donut = new THREE.Mesh(donutGeometry, materialDonut)
+
+            donut.position.x = (Math.random() - 0.5) * 10
+            donut.position.y = (Math.random() - 0.5) * 10
+            donut.position.z = (Math.random() - 0.5) * 10
+
+            donut.rotation.x = Math.random() * Math.PI
+            donut.rotation.y = Math.random() * Math.PI
+
+            const scale = Math.random()
+
+            donut.scale.set(scale, scale, scale)
+
+          
+
+            scene.add(donut)
+
+        }
+
     }
 );
 
@@ -83,15 +113,17 @@ window.addEventListener('resize', () => {
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+const camera = new THREE.PerspectiveCamera(80, sizes.width / sizes.height, 0.1, 100)
 camera.position.x = 1
 camera.position.y = 1
-camera.position.z = 2
+camera.position.z = 3
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
+controls.minDistance = 1
+controls.maxDistance = 8
 
 /**
  * Renderer
@@ -109,12 +141,12 @@ const clock = new THREE.Clock()
 
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
-
+    // console.log(elapsedTime);
     // Update controls
     controls.update()
-
     // Render
     renderer.render(scene, camera)
+    gsap.to(donut.rotation, { duration: 1, y: donut.rotation.y + 0.1 })
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
